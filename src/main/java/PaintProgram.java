@@ -5,8 +5,8 @@ import java.awt.event.*;
 public class PaintProgram implements ActionListener {
     JFrame frame;
     DrawingPanel dPanel;
-    JPanel buttonPanel;
-    JButton pencilButton, eraserButton;
+    JPanel buttonPanel, colorPanel;
+    JButton pencilButton, eraserButton,blueButton,greenButton,yellowButton,redButton;
 
     // This is the PaintProgram constructor which sets up the JFrame
     // and all other components and containers
@@ -32,7 +32,26 @@ public class PaintProgram implements ActionListener {
         eraserButton.addActionListener(this);
         buttonPanel.add(eraserButton);
 
-        // Set the size and set the visibility
+        colorPanel = new JPanel();
+        colorPanel.setLayout(new BoxLayout(colorPanel, BoxLayout.Y_AXIS));
+        frame.add(colorPanel, BorderLayout.EAST);
+
+        blueButton = new JButton("Blue");
+        blueButton.addActionListener(this);
+        colorPanel.add(blueButton);
+
+        greenButton = new JButton("Green");
+        greenButton.addActionListener(this);
+        colorPanel.add(greenButton);
+
+        yellowButton = new JButton("Yellow");
+        yellowButton.addActionListener(this);
+        colorPanel.add(yellowButton);
+
+        redButton = new JButton("Red");
+        redButton.addActionListener(this);
+        colorPanel.add(redButton);
+
         frame.pack();
         frame.setVisible(true);
     }
@@ -44,6 +63,21 @@ public class PaintProgram implements ActionListener {
         // If pencilButton is pressed, set drawingPanel mode to "Pencil"
         if (ae.getActionCommand().equals("Pencil")) {
             dPanel.setMode("Pencil");
+        }
+        else if (ae.getActionCommand().equals("Blue")) {
+            dPanel.setColor(Color.BLUE);
+        }
+        else if (ae.getActionCommand().equals("Green")) {
+            dPanel.setColor(Color.GREEN);
+        }
+        else if (ae.getActionCommand().equals("Yellow")) {
+            dPanel.setColor(Color.YELLOW);
+        }
+        else if (ae.getActionCommand().equals("Red")) {
+            dPanel.setColor(Color.RED);
+        }
+        if (ae.getActionCommand().equals("Eraser")){
+            dPanel.setMode("Eraser");
         }
     }
 
@@ -78,8 +112,6 @@ public class PaintProgram implements ActionListener {
         private static final int WIDTH = 500;
         private static final int HEIGHT = 500;
 
-        // Constructor sets up DrawingPanel
-        // ** You should never need to edit this code **
         public DrawingPanel() {
             // Set background color
             setBackground(Color.WHITE);
@@ -122,11 +154,10 @@ public class PaintProgram implements ActionListener {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 
-            // Loop through the 2D array and draw a 1x1 rectangle
-            // on each pixel that is currently painted
             for (int x = 0; x < WIDTH; x++) {
                 for (int y = 0; y < HEIGHT; y++) {
-                    if (isPainted[x][y]) {
+                    if (isPainted[x][y] == true) {
+                        g.setColor(colors[x][y]);
                         g.drawRect(x, y, 1, 1);
                     }
                 }
@@ -144,11 +175,21 @@ public class PaintProgram implements ActionListener {
             if (mode.equals("Pencil")) {
                 // Check that mouse is in bounds of panel
                 if (e.getX() >= 0 && e.getX() < WIDTH &&
-                    e.getY() >= 0 && e.getY() < HEIGHT) {
-                    // Set current pixel as painted
+                        e.getY() >= 0 && e.getY() < HEIGHT) {
+                    colors[e.getX()][e.getY()] = color;
                     isPainted[e.getX()][e.getY()] = true;
                 }
             }
+
+            if (mode.equals("Eraser")) {
+                // Check that mouse is in bounds of panel
+                if (e.getX() >= 0 && e.getX() < WIDTH && e.getY() >= 0 && e.getY() < HEIGHT) {
+                    isPainted[e.getX()][e.getY()] = false;
+                }
+            }
+
+
+
 
             // We need to manually tell the panel to repaint
             // and call the paintComponent method
